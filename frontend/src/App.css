@@ -41,7 +41,7 @@
   padding: 2px 4px;
   display: flex;
   alignItems: center;
-  width: 400px;
+  width: 100%;
 }
 
 .inputBase {

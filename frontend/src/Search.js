@@ -1,5 +1,5 @@
 import {
-    Avatar,
+    Avatar, Box,
     CircularProgress,
     Container,
     Grid,
@@ -10,7 +10,8 @@ import {
     ListItemAvatar,
     ListItemSecondaryAction,
     ListItemText,
-    Paper
+    Paper,
+    Typography
 } from "@material-ui/core";
 import logo from "./logo.svg";
 import SearchIcon from "@material-ui/icons/Search";
@@ -26,6 +27,7 @@ class Search extends React.Component {
         loading: false,
         page: 1,
         query: '',
+        queryChanged: false,
         searchResults: [],
         totalResults: 0,
     };
@@ -34,18 +36,24 @@ class Search extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.page !== prevState.page && this.state.query !== undefined) {
+        if (this.state.page !== prevState.page && !this.state.queryChanged) {
             this.movies();
+        }
+        if (this.state.queryChanged && this.state.page === 1) {
+            this.setState({queryChanged: false})
         }
     }
 
     movies = () => {
+        if (this.state.queryChanged) {
+            this.setState({page: 1})
+        }
         if (this.state.query === '') {
             alertStore.addAlert('Empty query!', 'error', 2000)
             return false;
         }
         this.setState({loading: true});
-        fetch(`http://localhost:8080/api/search?page=${this.state.page}&phrase=${this.state.query}`)
+        fetch(`http://localhost:8080/api/search?page=${this.state.queryChanged ? 1 : this.state.page}&phrase=${this.state.query}`)
             .then(response => response.json())
             .then(result => {
                 this.setState({loading: false});
@@ -76,7 +84,7 @@ class Search extends React.Component {
     };
 
     handleSearchPhraseChange = (event) => {
-        this.setState({query: event.target.value})
+        this.setState({query: event.target.value, queryChanged: true})
     }
 
     keyPress = (e) => {
@@ -111,12 +119,12 @@ class Search extends React.Component {
                             <SearchIcon/>
                         </IconButton>
                     </Paper>
-                    <Paper square>
-                        <Grid item xs={12} md={12}>
-                            <div>
-                                <List>
-                                    {this.state.loading ? <CircularProgress/> : this.state.searchResults &&
-                                        this.state.searchResults.map(value => {
+                    {this.state.loading ? <CircularProgress/> : this.state.totalResults > 0 &&
+                        <Paper variant={'outlined'} elevation={0} square>
+                            <Grid item xs={12} md={12}>
+                                <div>
+                                    <List>
+                                        {this.state.searchResults && this.state.searchResults.map(value => {
                                             return (
                                                 <ListItem key={value.imdbID}>
                                                     <ListItemAvatar>
@@ -126,7 +134,7 @@ class Search extends React.Component {
                                                         primary={value.Year}
                                                     />
                                                     <ListItemText
-                                                        primary={value.Title}
+                                                        primary={<Box ml={1} mr={1}>{value.Title}</Box>}
                                                     />
                                                     <ListItemSecondaryAction>
                                                         <IconButton edge="end" aria-label="delete">
@@ -140,15 +148,19 @@ class Search extends React.Component {
                                                 </ListItem>
                                             )
                                         })}
-                                </List>
-                            </div>
-                        </Grid>
-                        {
-                            this.state.totalResults > 0 &&
-                            <Pagination count={Math.ceil(this.state.totalResults / 10)}
-                                        onChange={this.handleChange}/>
-                        }
-                    </Paper>
+                                    </List>
+                                </div>
+                            </Grid>
+                            {
+                                this.state.totalResults > 0 &&
+                                <Box mx={'auto'}>
+                                    <Pagination siblingCount={3} page={this.state.page}
+                                                count={Math.ceil(this.state.totalResults / 10)}
+                                                onChange={this.handleChange}/>
+                                </Box>
+                            }
+                        </Paper>
+                    }
                 </Grid>
             </Container>
         )
