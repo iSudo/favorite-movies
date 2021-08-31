@@ -1,5 +1,6 @@
 import {
-    Avatar, Box,
+    Avatar,
+    Box,
     CircularProgress,
     Container,
     Grid,
@@ -10,8 +11,7 @@ import {
     ListItemAvatar,
     ListItemSecondaryAction,
     ListItemText,
-    Paper,
-    Typography
+    Paper
 } from "@material-ui/core";
 import logo from "./logo.svg";
 import SearchIcon from "@material-ui/icons/Search";
