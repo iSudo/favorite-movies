@@ -2,10 +2,10 @@
 Favorite movies application running on React as front and spring-boot as back
 ## Starting the project using docker-compose
 using pre-built fe and be images
-front-end: ´martintonts/omdb´
-back-end: ´martintonts/omdb-api´
+front-end: `martintonts/omdb`
+back-end: `martintonts/omdb-api`
  example docker-compose.yml
-´´´
+```
 version: '3'
 services:
     backend:
@@ -18,7 +18,7 @@ services:
         container_name: fe
         ports:
         - 80:80
-´´´
+```
 ## Or open project in IDE
 Run spring-boot application(back-end)
 
